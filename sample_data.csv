@@ -13,9 +13,9 @@ timestamp,data_type,value1,value2,value3,label1,label2,label3
 1,glicko_rating,1500,350,0.0,Rating,RD,Score
 2,glicko_rating,1500,350,0.0,Rating,RD,Score
 3,glicko_rating,1500,350,1.0,Rating,RD,Score
-4,glicko_rating,1500,350,0.5,Rating,RD,Score
-5,glicko_rating,1500,350,0.5,Rating,RD,Score
-6,glicko_rating,1500,350,1.0,Rating,RD,Score
-7,glicko_rating,1500,350,0.0,Rating,RD,Score
-8,glicko_rating,1500,350,0.0,Rating,RD,Score
-9,glicko_rating,1500,350,1.0,Rating,RD,Score
+4,glicko_rating,1500,350,0.0,Rating,RD,Score
+5,glicko_rating,1500,350,1.0,Rating,RD,Score
+6,glicko_rating,1500,350,0.5,Rating,RD,Score
+7,glicko_rating,1500,350,0.5,Rating,RD,Score
+8,glicko_rating,1500,350,0.5,Rating,RD,Score
+9,glicko_rating,1500,350,0.5,Rating,RD,Score

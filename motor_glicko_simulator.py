@@ -8,10 +8,8 @@ This script simulates:
 3. Generates CSV and optionally MF4 binary output files
 """
 
-import sys
 import math
 import csv
-from datetime import datetime, timedelta
 from typing import List, Dict, Tuple
 
 try:
@@ -412,7 +410,8 @@ def main():
     
     # Run motor physics simulation
     print("\nRunning motor physics simulation...")
-    motor_data = motor_sim.simulate_acceleration(duration=10.0, time_step=0.1)
+    time_step = 0.1
+    motor_data = motor_sim.simulate_acceleration(duration=10.0, time_step=time_step)
     print(f"Generated {len(motor_data)} motor physics data points")
     
     # Run Glicko rating simulation
@@ -430,7 +429,7 @@ def main():
     sample_data = []
     for i, motor_point in enumerate(motor_data[:10]):  # First 10 points
         sample_data.append({
-            'timestamp': i * 0.1,
+            'timestamp': i * time_step,
             'data_type': 'motor_physics',
             'value1': motor_point['rpm'],
             'value2': motor_point['torque'],
