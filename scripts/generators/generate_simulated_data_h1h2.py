@@ -25,7 +25,8 @@ from pathlib import Path
 SEED = 1854652912
 np.random.seed(SEED)
 
-OUTPUT_DIR = Path('data/tables')
+BASE_DIR = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = BASE_DIR / 'data' / 'tables'
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 print("="*70)
@@ -352,12 +353,19 @@ print("\n" + "="*70)
 print("GENERATION COMPLETE")
 print("="*70)
 
+def _fmt(path: Path) -> str:
+    """Render path relative to project root when possible."""
+    try:
+        return str(path.relative_to(BASE_DIR))
+    except ValueError:
+        return str(path)
+
 print("\nGenerated Files:")
-print(f"  1. {segmentation_path.relative_to(Path.cwd())}")
-print(f"  2. {summary_path.relative_to(Path.cwd())}")
-print(f"  3. {mqtt_path.relative_to(Path.cwd())}")
-print(f"  4. {mqtt_summary_path.relative_to(Path.cwd())}")
-print(f"  5. {time_loss_path.relative_to(Path.cwd())}")
+print(f"  1. {_fmt(segmentation_path)}")
+print(f"  2. {_fmt(summary_path)}")
+print(f"  3. {_fmt(mqtt_path)}")
+print(f"  4. {_fmt(mqtt_summary_path)}")
+print(f"  5. {_fmt(time_loss_path)}")
 
 print("\n📊 Key Results:")
 print(f"  • Skill Atom F1-Score: {df_segmentation_summary['f1_score'].mean():.3f}")
