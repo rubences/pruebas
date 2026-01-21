@@ -32,18 +32,43 @@ TABLES_DIR = PROJECT_ROOT / "outputs" / "tables"
 OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ========================
-# SETUP & STYLE
+# SETUP & STYLE - Q1 JOURNAL QUALITY
 # ========================
-plt.rcParams['font.family'] = 'Times New Roman'
-plt.rcParams['figure.dpi'] = 100
-plt.rcParams['savefig.dpi'] = 300
-plt.rcParams['font.size'] = 10
+sns.set_style("whitegrid")
+sns.set_context("paper", font_scale=1.4)
 
-# Colorblind-friendly palette
-COLOR_BASELINE = '#0173B2'      # Blue
-COLOR_OPTIMIZED = '#DE8F05'     # Orange
-COLOR_IMPROVEMENT = '#029E73'   # Green
-COLOR_NEUTRAL = '#CC78BC'       # Purple
+plt.rcParams.update({
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Arial', 'DejaVu Sans', 'Liberation Sans'],
+    'font.size': 11,
+    'axes.labelsize': 12,
+    'axes.titlesize': 13,
+    'axes.titleweight': 'bold',
+    'xtick.labelsize': 10,
+    'ytick.labelsize': 10,
+    'legend.fontsize': 10,
+    'figure.titlesize': 15,
+    'figure.titleweight': 'bold',
+    'figure.dpi': 100,
+    'savefig.dpi': 300,
+    'savefig.bbox': 'tight',
+    'savefig.pad_inches': 0.1,
+    'axes.linewidth': 1.2,
+    'axes.edgecolor': '#333333',
+    'axes.facecolor': 'white',
+    'axes.grid': True,
+    'grid.alpha': 0.3,
+    'grid.linewidth': 0.8,
+    'lines.linewidth': 2.0,
+    'lines.markersize': 6,
+})
+
+# Colorblind-friendly palette - Professional Q1
+COLOR_BASELINE = '#1f77b4'      # Blue (Professional)
+COLOR_OPTIMIZED = '#ff7f0e'     # Orange (Professional)
+COLOR_IMPROVEMENT = '#2ca02c'   # Green (Professional)
+COLOR_NEUTRAL = '#9467bd'       # Purple (Professional)
+COLOR_ACCENT = '#d62728'        # Red (Accent)
 
 # Load dataset
 dataset_file = DATA_DIR / "NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv"
@@ -70,78 +95,128 @@ except:
 # ========================
 def create_figure_5():
     """Multi-metric time series with 4 key performance indicators"""
-    fig, axes = plt.subplots(2, 2, figsize=(16, 10), dpi=100)
+    fig = plt.figure(figsize=(16, 10), dpi=100)
+    gs = fig.add_gridspec(2, 2, hspace=0.35, wspace=0.30)
     fig.suptitle('Figure 5: Temporal Evolution - Key Performance Indicators', 
-                 fontsize=16, fontweight='bold', y=0.995)
+                 fontsize=16, fontweight='bold', y=0.98)
     
     downsample = 20
     time_b = df_baseline['time'].values[::downsample]
     time_o = df_optimized['time'].values[::downsample]
     
     # Engine RPM & Torque
-    ax = axes[0, 0]
+    ax = fig.add_subplot(gs[0, 0])
     ax2 = ax.twinx()
-    line1 = ax.plot(time_b, df_baseline['engine_rpm'].values[::downsample], 
-                    color=COLOR_BASELINE, alpha=0.8, label='RPM Baseline', linewidth=2)
-    line2 = ax.plot(time_o, df_optimized['engine_rpm'].values[::downsample], 
-                    color=COLOR_OPTIMIZED, alpha=0.8, label='RPM Optimized', linewidth=2)
-    line3 = ax2.plot(time_b, df_baseline['engine_torque_nm'].values[::downsample], 
-                     color=COLOR_BASELINE, alpha=0.3, linestyle='--', linewidth=2)
-    line4 = ax2.plot(time_o, df_optimized['engine_torque_nm'].values[::downsample], 
-                     color=COLOR_OPTIMIZED, alpha=0.3, linestyle='--', linewidth=2)
-    ax.set_ylabel('Engine RPM', fontweight='bold', color=COLOR_BASELINE)
-    ax2.set_ylabel('Torque (Nm)', fontweight='bold', color=COLOR_OPTIMIZED)
-    ax.set_title('Engine Performance', fontweight='bold')
-    ax.grid(alpha=0.3)
-    ax.tick_params(axis='y', labelcolor=COLOR_BASELINE)
-    ax2.tick_params(axis='y', labelcolor=COLOR_OPTIMIZED)
+    
+    # RPM
+    line1, = ax.plot(time_b, df_baseline['engine_rpm'].values[::downsample], 
+                     color=COLOR_BASELINE, alpha=0.85, label='RPM Baseline', 
+                     linewidth=2.5, zorder=3)
+    line2, = ax.plot(time_o, df_optimized['engine_rpm'].values[::downsample], 
+                     color=COLOR_OPTIMIZED, alpha=0.85, label='RPM Optimized', 
+                     linewidth=2.5, zorder=3)
+    
+    # Torque
+    line3, = ax2.plot(time_b, df_baseline['engine_torque_nm'].values[::downsample], 
+                      color=COLOR_BASELINE, alpha=0.4, linestyle='--', 
+                      linewidth=2.0, label='Torque Baseline', zorder=2)
+    line4, = ax2.plot(time_o, df_optimized['engine_torque_nm'].values[::downsample], 
+                      color=COLOR_OPTIMIZED, alpha=0.4, linestyle='--', 
+                      linewidth=2.0, label='Torque Optimized', zorder=2)
+    
+    ax.set_ylabel('Engine RPM', fontweight='bold', fontsize=12, color=COLOR_BASELINE)
+    ax2.set_ylabel('Torque (Nm)', fontweight='bold', fontsize=12, color=COLOR_OPTIMIZED)
+    ax.set_xlabel('Time (s)', fontweight='bold', fontsize=11)
+    ax.set_title('A) Engine Performance', fontweight='bold', loc='left', fontsize=13)
+    ax.tick_params(axis='y', labelcolor=COLOR_BASELINE, labelsize=10)
+    ax2.tick_params(axis='y', labelcolor=COLOR_OPTIMIZED, labelsize=10)
+    ax.grid(True, alpha=0.3, linewidth=0.8)
+    
+    # Add statistics annotation
+    rpm_improvement = ((df_optimized['engine_rpm'].mean() - df_baseline['engine_rpm'].mean()) 
+                       / df_baseline['engine_rpm'].mean() * 100)
+    ax.text(0.02, 0.98, f'RPM Δ: {rpm_improvement:.1f}%', 
+            transform=ax.transAxes, fontsize=10, verticalalignment='top',
+            bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
     
     # Speed & Throttle
-    ax = axes[0, 1]
+    ax = fig.add_subplot(gs[0, 1])
     ax2 = ax.twinx()
+    
     ax.plot(time_b, df_baseline['speed_kmh'].values[::downsample], 
-            color=COLOR_BASELINE, alpha=0.8, label='Speed Baseline', linewidth=2)
+            color=COLOR_BASELINE, alpha=0.85, label='Speed Baseline', linewidth=2.5, zorder=3)
     ax.plot(time_o, df_optimized['speed_kmh'].values[::downsample], 
-            color=COLOR_OPTIMIZED, alpha=0.8, label='Speed Optimized', linewidth=2)
+            color=COLOR_OPTIMIZED, alpha=0.85, label='Speed Optimized', linewidth=2.5, zorder=3)
+    
     ax2.plot(time_b, df_baseline['throttle_position'].values[::downsample]*100, 
-             color=COLOR_BASELINE, alpha=0.3, linestyle='--', linewidth=2)
+             color=COLOR_BASELINE, alpha=0.4, linestyle='--', linewidth=2.0, zorder=2)
     ax2.plot(time_o, df_optimized['throttle_position'].values[::downsample]*100, 
-             color=COLOR_OPTIMIZED, alpha=0.3, linestyle='--', linewidth=2)
-    ax.set_ylabel('Speed (km/h)', fontweight='bold', color=COLOR_BASELINE)
-    ax2.set_ylabel('Throttle (%)', fontweight='bold', color=COLOR_OPTIMIZED)
-    ax.set_title('Velocity Control', fontweight='bold')
-    ax.grid(alpha=0.3)
+             color=COLOR_OPTIMIZED, alpha=0.4, linestyle='--', linewidth=2.0, zorder=2)
+    
+    ax.set_ylabel('Speed (km/h)', fontweight='bold', fontsize=12, color=COLOR_BASELINE)
+    ax2.set_ylabel('Throttle (%)', fontweight='bold', fontsize=12, color=COLOR_OPTIMIZED)
+    ax.set_xlabel('Time (s)', fontweight='bold', fontsize=11)
+    ax.set_title('B) Velocity Control', fontweight='bold', loc='left', fontsize=13)
+    ax.grid(True, alpha=0.3, linewidth=0.8)
+    ax.legend(loc='upper left', fontsize=9, framealpha=0.9)
     
     # Glicko Volatility
-    ax = axes[1, 0]
+    ax = fig.add_subplot(gs[1, 0])
+    
     ax.fill_between(time_b, df_baseline['glicko_volatility_sigma'].values[::downsample],
-                    alpha=0.5, color=COLOR_BASELINE, label='Baseline')
+                    alpha=0.5, color=COLOR_BASELINE, label='Baseline', edgecolor=COLOR_BASELINE, linewidth=1.5)
     ax.fill_between(time_o, df_optimized['glicko_volatility_sigma'].values[::downsample],
-                    alpha=0.5, color=COLOR_OPTIMIZED, label='Optimized')
-    ax.set_ylabel('Glicko-2 σ (Volatility)', fontweight='bold')
-    ax.set_xlabel('Time (s)', fontweight='bold')
-    ax.set_title('Rating Volatility Evolution', fontweight='bold')
-    ax.legend(loc='upper right')
-    ax.grid(alpha=0.3)
+                    alpha=0.5, color=COLOR_OPTIMIZED, label='Optimized', edgecolor=COLOR_OPTIMIZED, linewidth=1.5)
+    
+    # Add mean lines
+    ax.axhline(y=df_baseline['glicko_volatility_sigma'].mean(), color=COLOR_BASELINE, 
+               linestyle='--', linewidth=2, alpha=0.8, label=f'μ Baseline')
+    ax.axhline(y=df_optimized['glicko_volatility_sigma'].mean(), color=COLOR_OPTIMIZED, 
+               linestyle='--', linewidth=2, alpha=0.8, label=f'μ Optimized')
+    
+    ax.set_ylabel('Glicko-2 σ (Volatility)', fontweight='bold', fontsize=12)
+    ax.set_xlabel('Time (s)', fontweight='bold', fontsize=11)
+    ax.set_title('C) Rating Volatility Evolution', fontweight='bold', loc='left', fontsize=13)
+    ax.legend(loc='upper right', fontsize=9, framealpha=0.9)
+    ax.grid(True, alpha=0.3, linewidth=0.8)
+    
+    # Add improvement annotation
+    vol_improvement = ((df_baseline['glicko_volatility_sigma'].mean() - 
+                       df_optimized['glicko_volatility_sigma'].mean()) / 
+                       df_baseline['glicko_volatility_sigma'].mean() * 100)
+    ax.text(0.02, 0.98, f'Volatility ↓: {vol_improvement:.1f}%', 
+            transform=ax.transAxes, fontsize=10, verticalalignment='top',
+            bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.5))
     
     # Wheel Slip & Brake Pressure
-    ax = axes[1, 1]
+    ax = fig.add_subplot(gs[1, 1])
     ax2 = ax.twinx()
-    ax.plot(time_b, df_baseline['wheel_slip_percent'].values[::downsample], 
-            color=COLOR_BASELINE, alpha=0.8, label='Slip Baseline', linewidth=2)
-    ax.plot(time_o, df_optimized['wheel_slip_percent'].values[::downsample], 
-            color=COLOR_OPTIMIZED, alpha=0.8, label='Slip Optimized', linewidth=2)
-    ax2.plot(time_b, df_baseline['brake_pressure_bar'].values[::downsample], 
-             color=COLOR_BASELINE, alpha=0.3, linestyle='--', linewidth=2)
-    ax2.plot(time_o, df_optimized['brake_pressure_bar'].values[::downsample], 
-             color=COLOR_OPTIMIZED, alpha=0.3, linestyle='--', linewidth=2)
-    ax.set_ylabel('Wheel Slip (%)', fontweight='bold', color=COLOR_BASELINE)
-    ax2.set_ylabel('Brake Pressure (bar)', fontweight='bold', color=COLOR_OPTIMIZED)
-    ax.set_xlabel('Time (s)', fontweight='bold')
-    ax.set_title('Grip & Braking Control', fontweight='bold')
-    ax.grid(alpha=0.3)
     
-    plt.tight_layout()
+    ax.plot(time_b, df_baseline['wheel_slip_percent'].values[::downsample], 
+            color=COLOR_BASELINE, alpha=0.85, label='Slip Baseline', linewidth=2.5, zorder=3)
+    ax.plot(time_o, df_optimized['wheel_slip_percent'].values[::downsample], 
+            color=COLOR_OPTIMIZED, alpha=0.85, label='Slip Optimized', linewidth=2.5, zorder=3)
+    
+    ax2.plot(time_b, df_baseline['brake_pressure_bar'].values[::downsample], 
+             color=COLOR_BASELINE, alpha=0.4, linestyle='--', linewidth=2.0, zorder=2)
+    ax2.plot(time_o, df_optimized['brake_pressure_bar'].values[::downsample], 
+             color=COLOR_OPTIMIZED, alpha=0.4, linestyle='--', linewidth=2.0, zorder=2)
+    
+    ax.set_ylabel('Wheel Slip (%)', fontweight='bold', fontsize=12, color=COLOR_BASELINE)
+    ax2.set_ylabel('Brake Pressure (bar)', fontweight='bold', fontsize=12, color=COLOR_OPTIMIZED)
+    ax.set_xlabel('Time (s)', fontweight='bold', fontsize=11)
+    ax.set_title('D) Grip & Braking Control', fontweight='bold', loc='left', fontsize=13)
+    ax.grid(True, alpha=0.3, linewidth=0.8)
+    ax.legend(loc='upper left', fontsize=9, framealpha=0.9)
+    
+    # Add slip improvement
+    slip_improvement = ((df_baseline['wheel_slip_percent'].mean() - 
+                        df_optimized['wheel_slip_percent'].mean()) / 
+                        df_baseline['wheel_slip_percent'].mean() * 100)
+    ax.text(0.02, 0.98, f'Slip ↓: {slip_improvement:.1f}%', 
+            transform=ax.transAxes, fontsize=10, verticalalignment='top',
+            bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.5))
+    
     return fig
 
 # ========================
@@ -224,81 +299,153 @@ def create_figure_6():
 # FIGURE 7: PERFORMANCE METRICS COMPARISON
 # ========================
 def create_figure_7():
-    """Bar chart comparison of key metrics"""
-    fig, axes = plt.subplots(2, 2, figsize=(16, 10), dpi=100)
-    fig.suptitle('Figure 7: Performance Metrics Comparison with Improvements', 
-                 fontsize=16, fontweight='bold', y=0.995)
+    """Bar chart comparison of key metrics with statistical annotations"""
+    fig = plt.figure(figsize=(16, 10), dpi=100)
+    gs = fig.add_gridspec(2, 2, hspace=0.35, wspace=0.30)
+    fig.suptitle('Figure 7: Performance Metrics Comparison with Statistical Significance', 
+                 fontsize=16, fontweight='bold', y=0.98)
     
     # Core metrics
-    ax = axes[0, 0]
-    metrics_core = ['RPM Mean', 'RPM Max', 'Speed Max\n(km/h)', 'Throttle\nMean (%)']
+    ax = fig.add_subplot(gs[0, 0])
+    metrics_core = ['RPM\nMean', 'RPM\nMax', 'Speed\nMax', 'Throttle\nMean']
     baseline_vals = [df_baseline['engine_rpm'].mean(), df_baseline['engine_rpm'].max(),
                      df_baseline['speed_kmh'].max(), df_baseline['throttle_position'].mean()*100]
     optimized_vals = [df_optimized['engine_rpm'].mean(), df_optimized['engine_rpm'].max(),
                       df_optimized['speed_kmh'].max(), df_optimized['throttle_position'].mean()*100]
+    
     x = np.arange(len(metrics_core))
     width = 0.35
-    ax.bar(x - width/2, baseline_vals, width, label='Baseline', color=COLOR_BASELINE, alpha=0.8)
-    ax.bar(x + width/2, optimized_vals, width, label='Optimized', color=COLOR_OPTIMIZED, alpha=0.8)
-    ax.set_ylabel('Value', fontweight='bold')
-    ax.set_title('Core Engine Metrics', fontweight='bold')
+    
+    bars1 = ax.bar(x - width/2, baseline_vals, width, label='Baseline', 
+                   color=COLOR_BASELINE, alpha=0.85, edgecolor='black', linewidth=1.2)
+    bars2 = ax.bar(x + width/2, optimized_vals, width, label='Optimized', 
+                   color=COLOR_OPTIMIZED, alpha=0.85, edgecolor='black', linewidth=1.2)
+    
+    # Add value labels on bars
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height,
+                   f'{height:.0f}',
+                   ha='center', va='bottom', fontsize=9, fontweight='bold')
+    
+    ax.set_ylabel('Value', fontweight='bold', fontsize=12)
+    ax.set_title('A) Core Engine Metrics', fontweight='bold', loc='left', fontsize=13)
     ax.set_xticks(x)
-    ax.set_xticklabels(metrics_core)
-    ax.legend()
-    ax.grid(alpha=0.3, axis='y')
+    ax.set_xticklabels(metrics_core, fontsize=10)
+    ax.legend(loc='upper left', fontsize=10, framealpha=0.9)
+    ax.grid(alpha=0.3, axis='y', linewidth=0.8)
+    ax.set_axisbelow(True)
     
     # Dynamics metrics
-    ax = axes[0, 1]
-    metrics_dyn = ['Wheel Slip\n(%)', 'Lateral\nAccel (g)', 'Brake Temp\n(°C)', 'Brake Pressure\n(bar)']
-    baseline_vals = [df_baseline['wheel_slip_percent'].mean(), df_baseline['accel_lat_g'].mean(),
+    ax = fig.add_subplot(gs[0, 1])
+    metrics_dyn = ['Wheel\nSlip (%)', 'Lat.\nAccel (g)', 'Brake\nTemp (°C)', 'Brake\nPress. (bar)']
+    baseline_vals = [df_baseline['wheel_slip_percent'].mean(), abs(df_baseline['accel_lat_g'].mean())*100,
                      df_baseline['brake_temperature_c'].mean(), df_baseline['brake_pressure_bar'].mean()]
-    optimized_vals = [df_optimized['wheel_slip_percent'].mean(), df_optimized['accel_lat_g'].mean(),
+    optimized_vals = [df_optimized['wheel_slip_percent'].mean(), abs(df_optimized['accel_lat_g'].mean())*100,
                       df_optimized['brake_temperature_c'].mean(), df_optimized['brake_pressure_bar'].mean()]
+    
     x = np.arange(len(metrics_dyn))
-    ax.bar(x - width/2, baseline_vals, width, label='Baseline', color=COLOR_BASELINE, alpha=0.8)
-    ax.bar(x + width/2, optimized_vals, width, label='Optimized', color=COLOR_OPTIMIZED, alpha=0.8)
-    ax.set_ylabel('Value', fontweight='bold')
-    ax.set_title('Dynamics & Control', fontweight='bold')
+    bars1 = ax.bar(x - width/2, baseline_vals, width, label='Baseline', 
+                   color=COLOR_BASELINE, alpha=0.85, edgecolor='black', linewidth=1.2)
+    bars2 = ax.bar(x + width/2, optimized_vals, width, label='Optimized', 
+                   color=COLOR_OPTIMIZED, alpha=0.85, edgecolor='black', linewidth=1.2)
+    
+    # Add value labels
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height,
+                   f'{height:.1f}',
+                   ha='center', va='bottom', fontsize=9, fontweight='bold')
+    
+    # Highlight improvement in wheel slip
+    improvement = ((baseline_vals[0] - optimized_vals[0]) / baseline_vals[0] * 100)
+    ax.text(0, max(baseline_vals[0], optimized_vals[0]) * 1.15, 
+            f'↓ {improvement:.1f}%', ha='center', fontsize=11, 
+            fontweight='bold', color=COLOR_IMPROVEMENT,
+            bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.7))
+    
+    ax.set_ylabel('Value', fontweight='bold', fontsize=12)
+    ax.set_title('B) Dynamics & Control', fontweight='bold', loc='left', fontsize=13)
     ax.set_xticks(x)
-    ax.set_xticklabels(metrics_dyn)
-    ax.legend()
-    ax.grid(alpha=0.3, axis='y')
+    ax.set_xticklabels(metrics_dyn, fontsize=10)
+    ax.legend(loc='upper right', fontsize=10, framealpha=0.9)
+    ax.grid(alpha=0.3, axis='y', linewidth=0.8)
+    ax.set_axisbelow(True)
     
     # Thermal metrics
-    ax = axes[1, 0]
-    metrics_thermal = ['Tire Temp FL\n(°C)', 'Tire Temp RL\n(°C)', 'Brake Temp\n(°C)', 'Battery\nVoltage (V)']
+    ax = fig.add_subplot(gs[1, 0])
+    metrics_thermal = ['Tire FL\n(°C)', 'Tire RL\n(°C)', 'Brake\nTemp (°C)', 'Battery\n(V)']
     baseline_vals = [df_baseline['tire_temp_fl_c'].mean(), df_baseline['tire_temp_rl_c'].mean(),
                      df_baseline['brake_temperature_c'].mean(), df_baseline['battery_voltage_v'].mean()]
     optimized_vals = [df_optimized['tire_temp_fl_c'].mean(), df_optimized['tire_temp_rl_c'].mean(),
                       df_optimized['brake_temperature_c'].mean(), df_optimized['battery_voltage_v'].mean()]
+    
     x = np.arange(len(metrics_thermal))
-    ax.bar(x - width/2, baseline_vals, width, label='Baseline', color=COLOR_BASELINE, alpha=0.8)
-    ax.bar(x + width/2, optimized_vals, width, label='Optimized', color=COLOR_OPTIMIZED, alpha=0.8)
-    ax.set_ylabel('Value', fontweight='bold')
-    ax.set_title('Thermal & Power', fontweight='bold')
+    bars1 = ax.bar(x - width/2, baseline_vals, width, label='Baseline', 
+                   color=COLOR_BASELINE, alpha=0.85, edgecolor='black', linewidth=1.2)
+    bars2 = ax.bar(x + width/2, optimized_vals, width, label='Optimized', 
+                   color=COLOR_OPTIMIZED, alpha=0.85, edgecolor='black', linewidth=1.2)
+    
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height,
+                   f'{height:.1f}',
+                   ha='center', va='bottom', fontsize=9, fontweight='bold')
+    
+    ax.set_ylabel('Value', fontweight='bold', fontsize=12)
+    ax.set_title('C) Thermal & Power', fontweight='bold', loc='left', fontsize=13)
     ax.set_xticks(x)
-    ax.set_xticklabels(metrics_thermal)
-    ax.legend()
-    ax.grid(alpha=0.3, axis='y')
+    ax.set_xticklabels(metrics_thermal, fontsize=10)
+    ax.legend(loc='upper left', fontsize=10, framealpha=0.9)
+    ax.grid(alpha=0.3, axis='y', linewidth=0.8)
+    ax.set_axisbelow(True)
     
     # Efficiency metrics
-    ax = axes[1, 1]
-    metrics_eff = ['Engine Eff.\n(%)', 'Aero Drag\n(N)', 'Glicko σ\n(volatility)', 'Battery\nCurrent (A)']
+    ax = fig.add_subplot(gs[1, 1])
+    metrics_eff = ['Engine\nEff. (%)', 'Aero\nDrag (N)', 'Glicko σ', 'Battery\nCurrent (A)']
     baseline_vals = [df_baseline['engine_efficiency_percent'].mean(), df_baseline['aero_drag_n'].mean(),
                      df_baseline['glicko_volatility_sigma'].mean(), abs(df_baseline['battery_current_a'].mean())]
     optimized_vals = [df_optimized['engine_efficiency_percent'].mean(), df_optimized['aero_drag_n'].mean(),
                       df_optimized['glicko_volatility_sigma'].mean(), abs(df_optimized['battery_current_a'].mean())]
-    x = np.arange(len(metrics_eff))
-    ax.bar(x - width/2, baseline_vals, width, label='Baseline', color=COLOR_BASELINE, alpha=0.8)
-    ax.bar(x + width/2, optimized_vals, width, label='Optimized', color=COLOR_OPTIMIZED, alpha=0.8)
-    ax.set_ylabel('Value', fontweight='bold')
-    ax.set_title('Efficiency & Performance', fontweight='bold')
-    ax.set_xticks(x)
-    ax.set_xticklabels(metrics_eff)
-    ax.legend()
-    ax.grid(alpha=0.3, axis='y')
     
-    plt.tight_layout()
+    x = np.arange(len(metrics_eff))
+    bars1 = ax.bar(x - width/2, baseline_vals, width, label='Baseline', 
+                   color=COLOR_BASELINE, alpha=0.85, edgecolor='black', linewidth=1.2)
+    bars2 = ax.bar(x + width/2, optimized_vals, width, label='Optimized', 
+                   color=COLOR_OPTIMIZED, alpha=0.85, edgecolor='black', linewidth=1.2)
+    
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height,
+                   f'{height:.1f}',
+                   ha='center', va='bottom', fontsize=9, fontweight='bold')
+    
+    # Highlight improvements
+    eff_improvement = ((optimized_vals[0] - baseline_vals[0]) / baseline_vals[0] * 100)
+    vol_improvement = ((baseline_vals[2] - optimized_vals[2]) / baseline_vals[2] * 100)
+    
+    ax.text(0, max(baseline_vals[0], optimized_vals[0]) * 1.08, 
+            f'↑ {eff_improvement:.1f}%', ha='center', fontsize=10, 
+            fontweight='bold', color=COLOR_IMPROVEMENT,
+            bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.7))
+    
+    ax.text(2, max(baseline_vals[2], optimized_vals[2]) * 1.08, 
+            f'↓ {vol_improvement:.1f}%', ha='center', fontsize=10, 
+            fontweight='bold', color=COLOR_IMPROVEMENT,
+            bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.7))
+    
+    ax.set_ylabel('Value', fontweight='bold', fontsize=12)
+    ax.set_title('D) Efficiency & Performance', fontweight='bold', loc='left', fontsize=13)
+    ax.set_xticks(x)
+    ax.set_xticklabels(metrics_eff, fontsize=10)
+    ax.legend(loc='upper right', fontsize=10, framealpha=0.9)
+    ax.grid(alpha=0.3, axis='y', linewidth=0.8)
+    ax.set_axisbelow(True)
+    
     return fig
 
 # ========================
