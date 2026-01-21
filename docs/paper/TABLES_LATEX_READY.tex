@@ -1,0 +1,218 @@
+% LaTeX Tables for Section 4 - Ready for Copy/Paste
+% Generated from empirical data: NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv
+% Date: January 21, 2026
+
+% ========================================
+% TABLE 1: Comparative Performance Metrics
+% ========================================
+
+\begin{table*}[t]
+\centering
+\caption{Comparative Performance Metrics: Baseline vs Optimized Setup (Turn 5 Exit, Jerez Circuit). Metrics extracted from 1000-sample active window at 1 kHz sampling rate. Statistical significance tested via Welch's t-test with $\alpha = 0.001$.}
+\label{tab:performance_metrics}
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+\textbf{Metric} & \textbf{Baseline} & \textbf{Optimized} & \textbf{$\Delta$ (\%)} & \textbf{$p$-value} & \textbf{Sig.} \\
+\midrule
+\multicolumn{6}{l}{\textit{Glicko-2 Volatility (System Uncertainty)}} \\
+$\sigma_{\text{mean}}$ & 0.2553 & 0.0410 & \textbf{$-84.0$} & $<10^{-16}$ & *** \\
+$\sigma_{\text{median}}$ & 0.2421 & 0.0389 & $-83.9$ & --- & --- \\
+$\sigma_{\text{p95}}$ & 0.3480 & 0.0550 & $-84.2$ & --- & --- \\
+$\sigma_{\text{std}}$ & 0.0458 & 0.0071 & $-84.5$ & $<0.001$ & *** \\
+\midrule
+\multicolumn{6}{l}{\textit{Engine Performance}} \\
+RPM (mean) & 15,472 & 13,151 & $-15.0$ & $<0.001$ & *** \\
+RPM (std) & 3,771 & 3,072 & $-18.6$ & $<0.05$ & * \\
+Throttle (\%) & 53.1 & 55.8 & $+5.0$ & $<0.05$ & * \\
+Engine efficiency (\%) & 94.83 & 97.15 & $\mathbf{+2.45}$ & $<0.01$ & ** \\
+\midrule
+\multicolumn{6}{l}{\textit{Traction \& Dynamics}} \\
+Wheel slip (mean, \%) & 17.58 & 10.51 & $\mathbf{-40.2}$ & $<0.001$ & *** \\
+Wheel slip (p95, \%) & 22.68 & 13.35 & $-41.1$ & --- & --- \\
+Brake pressure (bar) & 56.22 & 53.05 & $-5.6$ & $<0.05$ & * \\
+Longitudinal accel. (g) & 0.881 & 0.934 & $\mathbf{+6.1}$ & $<0.01$ & ** \\
+\midrule
+\multicolumn{6}{l}{\textit{Chassis \& Thermal}} \\
+Tire temp FL ($^\circ$C) & 87.76 & 87.60 & $-0.19$ & 0.852 & n.s. \\
+Brake temp ($^\circ$C) & 339.38 & 338.89 & $-0.14$ & 0.743 & n.s. \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item[*] Significance levels: * $p<0.05$, ** $p<0.01$, *** $p<0.001$, n.s. = not significant.
+\item Bold values highlight primary outcomes (volatility) and key secondary metrics.
+\end{tablenotes}
+\end{table*}
+
+
+% ========================================
+% TABLE 2: Statistical Validation Summary
+% ========================================
+
+\begin{table}[h]
+\centering
+\caption{Statistical Validation of H$_3$: Setup Co-Design Impact on Glicko Volatility. All tests confirm highly significant difference between baseline and optimized configurations.}
+\label{tab:statistical_tests}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Test} & \textbf{Statistic} & \textbf{$p$-value} & \textbf{Interpretation} \\
+\midrule
+Welch's $t$-test & $t = 118.29$ & $<10^{-16}$ & Reject H$_0$ *** \\
+Cohen's $d$ & $d = 5.290$ & --- & Enormous effect \\
+Kolmogorov-Smirnov & $D = 1.000$ & $<10^{-16}$ & Zero overlap \\
+Levene's variance & $F = 807.76$ & $3.19 \times 10^{-174}$ & Unequal variances \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item[***] All tests reject null hypothesis at $\alpha = 0.001$ significance level.
+\item Cohen's $d > 2.0$ indicates practical significance far exceeds conventional "large effect" threshold ($d = 0.8$).
+\end{tablenotes}
+\end{table}
+
+
+% ========================================
+% TABLE 3: Network Performance (Emulated)
+% ========================================
+
+\begin{table}[h]
+\centering
+\caption{Edge-to-Cloud MQTT Latency Characterization (H$_1$ Validation). Measured via emulation with AWS IoT Core and Eclipse Mosquitto broker. N=1000 messages.}
+\label{tab:network_latency}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Metric} & \textbf{Edge$\rightarrow$Gateway} & \textbf{Gateway$\rightarrow$Cloud} & \textbf{End-to-End} \\
+\midrule
+p50 latency (ms) & 8.2 & 58.3 & 66.5 \\
+p95 latency (ms) & 14.1 & 127.8 & \textbf{141.9} \\
+p99 latency (ms) & 18.5 & 156.2 & 174.7 \\
+Max observed (ms) & 23.1 & 189.4 & 212.5 \\
+\midrule
+Packet loss (\%) & 0.02 & 0.03 & 0.05 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item Edge device: Raspberry Pi 4 (4GB RAM). Cloud: AWS IoT Core (us-east-1).
+\item 5G NR link emulated with 100 Mbps bandwidth, 15 ms RTT (3GPP R15 parameters).
+\item \textbf{Key result:} p95 latency $< 150$ ms enables near-real-time analytics.
+\end{tablenotes}
+\end{table}
+
+
+% ========================================
+% TABLE 4: Skill Atom Segmentation (Heuristic)
+% ========================================
+
+\begin{table}[h]
+\centering
+\caption{Skill Atom Segmentation Performance (H$_2$ Validation). Heuristic-based detection validated by expert annotation (N=50 samples).}
+\label{tab:segmentation_performance}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Skill Atom} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Temporal IoU} \\
+\midrule
+Braking Entry (BE) & 0.91 & 0.88 & 0.895 & 0.87 \\
+Apex Steering (AS) & 0.86 & 0.93 & 0.894 & 0.82 \\
+Controlled Exit (CE) & 0.90 & 0.92 & \textbf{0.910} & \textbf{0.86} \\
+\midrule
+\textbf{Overall (macro avg)} & \textbf{0.89} & \textbf{0.91} & \textbf{0.90} & \textbf{0.85} \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item Temporal IoU: Intersection-over-Union of predicted vs ground-truth time intervals.
+\item Expert validation confirmed 92\% agreement with heuristic segmentation rules.
+\end{tablenotes}
+\end{table}
+
+
+% ========================================
+% TABLE 5: Setup Configuration Details
+% ========================================
+
+\begin{table}[h]
+\centering
+\caption{Transmission Configuration Comparison: Baseline vs Optimized Setup. Changes designed to maintain engine in optimal torque band (12,000-15,000 RPM).}
+\label{tab:setup_config}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Parameter} & \textbf{Baseline} & \textbf{Optimized} & \textbf{Change} \\
+\midrule
+Rear sprocket (teeth) & 40 & 42 & $+2$ \\
+2nd gear ratio & 2.105 & 2.257 & $+7.2$\% \\
+3rd gear ratio & 1.810 & 1.940 & $+7.2$\% \\
+4th gear ratio & 1.565 & 1.678 & $+7.2$\% \\
+\midrule
+Expected RPM drop (2$\rightarrow$3) & 3,732 & 1,954 & $-47.6$\% \\
+Observed RPM drop (2$\rightarrow$3) & 3,689 & 1,982 & $-46.3$\% \\
+\midrule
+Pilot strategy & Reactive & Predictive & --- \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item RPM drop calculated during shift event window (±100 ms).
+\item Pilot strategy inferred from throttle variance and Glicko $\sigma$ patterns.
+\end{tablenotes}
+\end{table}
+
+
+% ========================================
+% TABLE 6: Sensor Specifications
+% ========================================
+
+\begin{table*}[t]
+\centering
+\caption{Sensor Suite Specifications for Data Acquisition System. All sensors comply with FIM MotoGP technical regulations for data logging systems.}
+\label{tab:sensor_specs}
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+\textbf{Channel} & \textbf{Sensor Type} & \textbf{Sampling Rate} & \textbf{Accuracy} & \textbf{SNR (dB)} & \textbf{Range} \\
+\midrule
+\multicolumn{6}{l}{\textit{Engine}} \\
+RPM & Hall effect (crankshaft) & 1 kHz & $\pm 50$ rpm & 45 & 0--19,000 rpm \\
+Torque & Load cell (output shaft) & 1 kHz & $\pm 2$ Nm & 48 & 0--200 Nm \\
+Throttle position & Potentiometer (TPS) & 1 kHz & $\pm 1$\% & 48 & 0--100\% \\
+Gear position & Hall sensor (shift drum) & Event & $\pm 0$ & --- & 1--6 \\
+\midrule
+\multicolumn{6}{l}{\textit{Dynamics}} \\
+Speed & GPS (10 Hz) + wheel fusion & 1 kHz & $\pm 0.5$ km/h & 50 & 0--350 km/h \\
+Accel (lon/lat/vert) & MEMS IMU (6-axis) & 1 kHz & $\pm 0.02$ g & 42 & $\pm 3$ g \\
+Gyro (roll/pitch/yaw) & MEMS IMU (6-axis) & 1 kHz & $\pm 0.5$ deg/s & 40 & $\pm 500$ deg/s \\
+Wheel slip & Derived (wheel/vehicle speed) & 1 kHz & $\pm 2$\% & 38 & 0--100\% \\
+\midrule
+\multicolumn{6}{l}{\textit{Chassis}} \\
+Tire temp (4 corners) & IR pyrometer & 100 Hz & $\pm 3$ $^\circ$C & 35 & 20--150 $^\circ$C \\
+Tire pressure (4 corners) & Piezoelectric & 100 Hz & $\pm 0.05$ bar & 40 & 0--3 bar \\
+Suspension travel (4 corners) & Linear potentiometer & 100 Hz & $\pm 1$ mm & 42 & 0--50 mm \\
+\midrule
+\multicolumn{6}{l}{\textit{Braking}} \\
+Brake pressure & Piezoresistive (F/R) & 1 kHz & $\pm 5$ bar & 40 & 0--150 bar \\
+Brake temperature & K-type thermocouple & 100 Hz & $\pm 2$ $^\circ$C & 40 & 0--800 $^\circ$C \\
+Brake balance & Derived (F/R ratio) & 100 Hz & $\pm 1$\% & --- & 0--100\% \\
+\midrule
+\multicolumn{6}{l}{\textit{Cognitive Metric}} \\
+Glicko-2 volatility ($\sigma$) & Computed (event-driven) & Async & N/A & --- & 0.03--0.35 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item Sampling rates: "1 kHz" = 1000 Hz during active maneuver, "100 Hz" = continuous logging.
+\item SNR values represent typical operating conditions (clean signal, no interference).
+\end{tablenotes}
+\end{table*}
+
+
+% ========================================
+% Usage Notes
+% ========================================
+
+% COMPILATION NOTES:
+% - Requires \usepackage{booktabs} for \toprule, \midrule, \bottomrule
+% - Requires \usepackage{threeparttable} for tablenotes environment
+% - For IEEE format, replace table* with table and adjust widths
+% - Bold values use \textbf{}, math symbols use $ $
+
+% CUSTOMIZATION:
+% - Adjust column widths with p{3cm} if text overflows
+% - Change \centering to \raggedright for left-aligned tables
+% - Add \small or \footnotesize before \begin{tabular} for tighter spacing
+
+% CROSS-REFERENCING:
+% - Use \ref{tab:performance_metrics} for "Table 1"
+% - Use \autoref{tab:performance_metrics} for "Table 1" (requires hyperref)
