@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Figuras Avanzadas v4.1 - Análisis MotoGP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0173B2 0%, #029E73 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #0173B2;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #0173B2;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .figures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        .figure-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .figure-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-color: #0173B2;
+        }
+        
+        .figure-header {
+            background: linear-gradient(135deg, #0173B2 0%, #DE8F05 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .figure-number {
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .figure-title {
+            font-size: 0.9em;
+            margin-top: 10px;
+            opacity: 0.95;
+        }
+        
+        .figure-content {
+            padding: 25px;
+        }
+        
+        .figure-description {
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .subpanels {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .subpanels-title {
+            font-weight: bold;
+            color: #0173B2;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .subpanels-list {
+            list-style: none;
+            font-size: 0.85em;
+            color: #666;
+        }
+        
+        .subpanels-list li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .subpanels-list li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #DE8F05;
+        }
+        
+        .insight {
+            background: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #0173B2;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #333;
+        }
+        
+        .insight-title {
+            font-weight: bold;
+            color: #0173B2;
+            margin-bottom: 8px;
+        }
+        
+        .improvements {
+            background: #e8f8f0;
+            padding: 15px;
+            border-left: 4px solid #029E73;
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+        
+        .improvement-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            color: #333;
+        }
+        
+        .improvement-value {
+            color: #029E73;
+            font-weight: bold;
+        }
+        
+        .figure-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-pdf {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-pdf:hover {
+            background: #c82333;
+            transform: scale(1.05);
+        }
+        
+        .btn-png {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-png:hover {
+            background: #138496;
+            transform: scale(1.05);
+        }
+        
+        .key-metrics {
+            padding: 40px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .metrics-title {
+            font-size: 2em;
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .metric-category {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #0173B2;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .metric-category:before {
+            content: "⬤";
+            margin-right: 10px;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+        
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #666;
+        }
+        
+        .metric-improvement {
+            color: #029E73;
+            font-weight: bold;
+        }
+        
+        .footer {
+            background: #333;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        .footer-links {
+            margin-top: 15px;
+        }
+        
+        .footer-links a {
+            color: #0173B2;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .figures-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><span class="emoji">📊</span>Figuras Avanzadas v4.1</h1>
+            <p>Análisis Completo - MotoGP Dataset MEGA | Jerez Circuit | 20,000 Muestras</p>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">Figuras Totales</div>
+                <div class="stat-number">8</div>
+                <div class="stat-label">Publication-Ready</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Subpaneles</div>
+                <div class="stat-number">24</div>
+                <div class="stat-label">Visualizaciones Distintas</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Resolución</div>
+                <div class="stat-number">300 DPI</div>
+                <div class="stat-label">PDF + PNG</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Dataset</div>
+                <div class="stat-number">20K</div>
+                <div class="stat-label">Muestras | 37 Canales</div>
+            </div>
+        </div>
+        
+        <!-- Figures Grid -->
+        <div class="figures-grid">
+            <!-- Figure 5 -->
+            <div class="figure-card">
+                <div class="figure-header">
+                    <div class="figure-number">5</div>
+                    <div class="figure-title">Temporal Evolution - Key Performance Indicators</div>
+                </div>
+                <div class="figure-content">
+                    <div class="figure-description">
+                        Evolución temporal de 4 métricas clave con comparación lado a lado entre setups baseline y optimizado.
+                    </div>
+                    <div class="subpanels">
+                        <div class="subpanels-title">Subpaneles:</div>
+                        <ul class="subpanels-list">
+                            <li>Engine Performance (RPM + Torque)</li>
+                            <li>Velocity Control (Speed + Throttle)</li>
+                            <li>Rating Volatility (Glicko-2 σ)</li>
+                            <li>Grip & Braking (Slip + Presión)</li>
+                        </ul>
+                    </div>
+                    <div class="insight">
+                        <div class="insight-title">📌 Insight Clave:</div>
+                        Setup optimizado muestra control más fino del motor y mejor agarre, especialmente visible en slip reducido y volatility controlada.
+                    </div>
+                    <div class="figure-links">
+                        <a href="figures/Figure_5_Time_Series_Multi-Metrics.pdf" class="btn btn-pdf">📄 PDF</a>
+                        <a href="figures/Figure_5_Time_Series_Multi-Metrics.png" class="btn btn-png">🖼️ PNG</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Figure 6 -->
+            <div class="figure-card">
+                <div class="figure-header">
+                    <div class="figure-number">6</div>
+                    <div class="figure-title">Statistical Validation & Distribution Analysis</div>
+                </div>
+                <div class="figure-content">
+                    <div class="figure-description">
+                        Análisis estadístico completo con distribuciones, box plots y pruebas de normalidad Q-Q.
+                    </div>
+                    <div class="subpanels">
+                        <div class="subpanels-title">Subpaneles:</div>
+                        <ul class="subpanels-list">
+                            <li>Volatility Distribution (Histograma)</li>
+                            <li>Volatility Comparison (Box Plot)</li>
+                            <li>Q-Q Plot Baseline</li>
+                            <li>Slip Distribution</li>
+                            <li>RPM Distribution</li>
+                            <li>Q-Q Plot Optimized</li>
+                        </ul>
+                    </div>
+                    <div class="insight">
+                        <div class="insight-title">📌 Insight Clave:</div>
+                        Optimized muestra distribuciones más concentradas (menor varianza), validando mejor control y estabilidad estadística.
+                    </div>
+                    <div class="figure-links">
+                        <a href="figures/Figure_6_Statistical_Validation.pdf" class="btn btn-pdf">📄 PDF</a>
+                        <a href="figures/Figure_6_Statistical_Validation.png" class="btn btn-png">🖼️ PNG</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Figure 7 -->
+            <div class="figure-card">
+                <div class="figure-header">
+                    <div class="figure-number">7</div>
+                    <div class="figure-title">Performance Metrics Comparison with Improvements</div>
+                </div>
+                <div class="figure-content">
+                    <div class="figure-description">
+                        Comparación de barras con todos los KPIs principales mostrando valores exactos y mejoras porcentuales.
+                    </div>
+                    <div class="subpanels">
+                        <div class="subpanels-title">Subpaneles:</div>
+                        <ul class="subpanels-list">
+                            <li>Core Engine Metrics</li>
+                            <li>Dynamics & Control</li>
+                            <li>Thermal & Power</li>
+                            <li>Efficiency & Performance</li>
+                        </ul>
+                    </div>
+                    <div class="improvements">
+                        <div class="improvement-item">
+                            <span>Wheel Slip:</span>
+                            <span class="improvement-value">-40.1% ✨</span>
+                        </div>
+                        <div class="improvement-item">
+                            <span>Engine Efficiency:</span>
+                            <span class="improvement-value">+2.32% ✨</span>
+                        </div>
+                    </div>
+                    <div class="figure-links">
+                        <a href="figures/Figure_7_Performance_Metrics_Comparison.pdf" class="btn btn-pdf">📄 PDF</a>
+                        <a href="figures/Figure_7_Performance_Metrics_Comparison.png" class="btn btn-png">🖼️ PNG</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Figure 8 -->
+            <div class="figure-card">
+                <div class="figure-header">
+                    <div class="figure-number">8</div>
+                    <div class="figure-title">Dynamics, Control & Suspension Analysis</div>
+                </div>
+                <div class="figure-content">
+                    <div class="figure-description">
+                        Análisis detallado de dinámicas de conducción, suspensión y sistemas de control.
+                    </div>
+                    <div class="subpanels">
+                        <div class="subpanels-title">Subpaneles:</div>
+                        <ul class="subpanels-list">
+                            <li>Longitudinal & Lateral Acceleration</li>
+                            <li>Suspension Compression</li>
+                            <li>Angular Motion (Roll & Yaw)</li>
+                            <li>Braking System Performance</li>
+                        </ul>
+                    </div>
+                    <div class="insight">
+                        <div class="insight-title">📌 Insight Clave:</div>
+                        Sistema de suspensión y dinámicas más smooth en optimized, indicando mejor balance aerodinámico.
+                    </div>
+                    <div class="figure-links">
+                        <a href="figures/Figure_8_Dynamics_&_Control_Analysis.pdf" class="btn btn-pdf">📄 PDF</a>
+                        <a href="figures/Figure_8_Dynamics_&_Control_Analysis.png" class="btn btn-png">🖼️ PNG</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Figure 9 -->
+            <div class="figure-card">
+                <div class="figure-header">
+                    <div class="figure-number">9</div>
+                    <div class="figure-title">Thermal Management & Tire Pressure Analysis</div>
+                </div>
+                <div class="figure-content">
+                    <div class="figure-description">
+                        Análisis detallado de sistemas térmicos y presiones de neumáticos en tiempo real.
+                    </div>
+                    <div class="subpanels">
+                        <div class="subpanels-title">Subpaneles:</div>
+                        <ul class="subpanels-list">
+                            <li>Front Left Tire Temperature</li>
+                            <li>Rear Left Tire Temperature</li>
+                            <li>Tire Pressures (Front & Rear)</li>
+                            <li>Brake System Temperature</li>
+                        </ul>
+                    </div>
+                    <div class="insight">
+                        <div class="insight-title">📌 Insight Clave:</div>
+                        Todas las temperaturas y presiones controladas sin diferencias significativas, indicando estabilidad térmica.
+                    </div>
+                    <div class="figure-links">
+                        <a href="figures/Figure_9_Thermal_&_Tire_Analysis.pdf" class="btn btn-pdf">📄 PDF</a>
+                        <a href="figures/Figure_9_Thermal_&_Tire_Analysis.png" class="btn btn-png">🖼️ PNG</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Figure 10 -->
+            <div class="figure-card">
+                <div class="figure-header">
+                    <div class="figure-number">10</div>
+                    <div class="figure-title">Efficiency, Aerodynamics & Power Management</div>
+                </div>
+                <div class="figure-content">
+                    <div class="figure-description">
+                        Análisis de eficiencia del motor, fuerzas aerodinámicas y gestión de energía.
+                    </div>
+                    <div class="subpanels">
+                        <div class="subpanels-title">Subpaneles:</div>
+                        <ul class="subpanels-list">
+                            <li>Engine Efficiency</li>
+                            <li>Aerodynamic Forces</li>
+                            <li>Battery Voltage</li>
+                            <li>Battery Current Draw</li>
+                        </ul>
+                    </div>
+                    <div class="improvements">
+                        <div class="improvement-item">
+                            <span>Engine Efficiency:</span>
+                            <span class="improvement-value">94.83% → 97.15%</span>
+                        </div>
+                    </div>
+                    <div class="figure-links">
+                        <a href="figures/Figure_10_Efficiency_&_Power_Management.pdf" class="btn btn-pdf">📄 PDF</a>
+                        <a href="figures/Figure_10_Efficiency_&_Power_Management.png" class="btn btn-png">🖼️ PNG</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Figure 11 -->
+            <div class="figure-card">
+                <div class="figure-header">
+                    <div class="figure-number">11</div>
+                    <div class="figure-title">Phase Space & Multi-Dimensional Relationships</div>
+                </div>
+                <div class="figure-content">
+                    <div class="figure-description">
+                        Análisis de relaciones multidimensionales mediante scatter plots y correlaciones.
+                    </div>
+                    <div class="subpanels">
+                        <div class="subpanels-title">Subpaneles:</div>
+                        <ul class="subpanels-list">
+                            <li>RPM vs Torque Relationship</li>
+                            <li>Throttle vs Speed Response</li>
+                            <li>Lateral Accel vs Wheel Slip</li>
+                            <li>Tire Temperature vs Grip</li>
+                        </ul>
+                    </div>
+                    <div class="insight">
+                        <div class="insight-title">📌 Insight Clave:</div>
+                        Mejor grip sin mayor riesgo de deslizamiento. Relaciones más lineales y controladas en optimized.
+                    </div>
+                    <div class="figure-links">
+                        <a href="figures/Figure_11_Phase_Space_&_Correlations.pdf" class="btn btn-pdf">📄 PDF</a>
+                        <a href="figures/Figure_11_Phase_Space_&_Correlations.png" class="btn btn-png">🖼️ PNG</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Figure 12 -->
+            <div class="figure-card">
+                <div class="figure-header">
+                    <div class="figure-number">12</div>
+                    <div class="figure-title">Lap-by-Lap Performance Breakdown</div>
+                </div>
+                <div class="figure-content">
+                    <div class="figure-description">
+                        Análisis vuelta a vuelta para validar consistencia y uniformidad del setup optimizado.
+                    </div>
+                    <div class="subpanels">
+                        <div class="subpanels-title">Subpaneles:</div>
+                        <ul class="subpanels-list">
+                            <li>Baseline: RPM & Volatility by Lap</li>
+                            <li>Optimized: RPM & Volatility by Lap</li>
+                            <li>Wheel Slip by Lap Comparison</li>
+                            <li>Maximum Speed per Lap</li>
+                        </ul>
+                    </div>
+                    <div class="insight">
+                        <div class="insight-title">📌 Insight Clave:</div>
+                        Validación de consistencia: optimized mantiene rendimiento uniforme vuelta tras vuelta.
+                    </div>
+                    <div class="figure-links">
+                        <a href="figures/Figure_12_Lap-by-Lap_Breakdown.pdf" class="btn btn-pdf">📄 PDF</a>
+                        <a href="figures/Figure_12_Lap-by-Lap_Breakdown.png" class="btn btn-png">🖼️ PNG</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Key Metrics -->
+        <div class="key-metrics">
+            <h2 class="metrics-title"><span class="emoji">✨</span>Mejoras Clave Cuantificadas</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-category">Agarre & Control</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Wheel Slip</span>
+                        <span class="metric-improvement">-40.1% ✨✨✨</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Lateral Accel</span>
+                        <span class="metric-improvement">-5.0% ✨✨</span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-category">Estabilidad & Volatility</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Glicko-2 σ</span>
+                        <span class="metric-improvement">-83.6% ✨✨✨</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">RPM Max</span>
+                        <span class="metric-improvement">-15.0% ✨✨</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">RPM Mean</span>
+                        <span class="metric-improvement">-5.5% ✨</span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-category">Eficiencia & Energía</div>
+                    <div class="metric-row">
+                        <span class="metric-label">Engine Efficiency</span>
+                        <span class="metric-improvement">+2.32% ✨✨</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Brake Temp</span>
+                        <span class="metric-improvement">-0.1°C ✓</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Brake Pressure</span>
+                        <span class="metric-improvement">0.0 bar ✓</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Generated: 2024-01-21 | Dataset: v4.0 MEGA (20,000 samples, 37 channels) | Circuit: Jerez</p>
+            <p>Figuras: 8 visualizaciones publication-quality | Resolución: 300 DPI | Formatos: PDF + PNG</p>
+            <div class="footer-links">
+                <a href="FIGURES_EXPLANATION_v4.1.md">📖 Documentación Completa</a>
+                <a href="FIGURES_SUMMARY.txt">📋 Resumen Técnico</a>
+                <a href="tables/Table_v4_All_Metrics.csv">📊 Tabla de Métricas</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
