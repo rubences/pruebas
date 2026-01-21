@@ -1,7 +1,0 @@
-Métrica,Baseline,Optimized,Improvement
-RPM Drop (shift 2→3),3668 rpm,2057 rpm,43.9%
-Glicko σ (mean),0.2381,0.0393,83.5%
-Glicko σ (max),0.3158,0.0402,87.3%
-Throttle σ,12.49%,21.79%,-74.4%
-Wheel Slip μ,15.08%,10.64%,29.5%
-Long. Accel μ,0.881 g,0.934 g,6.1%
