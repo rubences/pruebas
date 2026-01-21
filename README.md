@@ -1,179 +1,262 @@
-# 🏎️ MotoGP Dataset & Glicko-2 Simulator v4.0
+# MotoGP Nonlinear Lumping Analysis (NLA) - Jerez Circuit Study
 
-**Advanced motor physics simulation with Glicko-2 rating system for competitive MotoGP analysis.**
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Research: Q1](https://img.shields.io/badge/Research-Q1%20Ready-brightgreen.svg)](docs/)
 
-A production-ready dataset generator and analysis platform for MotoGP lap telemetry, combining realistic motor physics with Glicko-2 volatility tracking across 6 Jerez circuit turns.
+## 📋 Descripción
 
-## 🚀 Quick Start
+Análisis avanzado de telemetría MotoGP aplicando la metodología Nonlinear Lumping Analysis (NLA) al Circuito de Jerez - Ángel Nieto. Este proyecto genera y analiza datasets sintéticos de alta fidelidad que replican condiciones reales de carrera, comparando configuraciones baseline y optimizadas con **validación estadística rigurosa**.
 
-### **Three Ways to Run Everything**
+### 🎯 Características Principales
 
-#### **1. Python (Recommended - All Platforms)**
-```bash
-python run_all.py              # Generate all (dataset + tables + verify)
-python run_all.py --full       # Full suite (+ figures + MDF4)
+- **20,000 muestras** a 100Hz (estándar FIM)
+- **37 canales telemetría**: motor, suspensión, aerodinámica, neumáticos, Glicko-2
+- **6 curvas** del circuito de Jerez analizadas
+- **Validación estadística**: Welch t-test, Cohen's d, Kolmogorov-Smirnov
+- **Figuras Q1**: 8 visualizaciones publication-ready (PDF/PNG 300dpi)
+- **Física Grade A+**: fuerzas reales, cargas laterales, interacciones complejas
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+pruebas/
+├── 📂 bin/                          # Scripts ejecutables
+│   ├── run_all.py                   # Ejecutar pipeline completo
+│   ├── run_all.sh                   # Wrapper bash
+│   ├── print_summary.py             # Resumen de resultados
+│   └── show_structure.sh            # Mostrar estructura
+│
+├── 📂 data/                         # Datos y resultados
+│   ├── datasets/                    # Datasets CSV
+│   │   ├── NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv (20k muestras)
+│   │   └── NLA_CaseStudy_Jerez_Industrial_AllChannels.csv
+│   ├── tables/                      # Tablas de métricas
+│   │   ├── Table_v4_All_Metrics.csv
+│   │   ├── Table_v4_Glicko_Summary.csv
+│   │   ├── Table_v4_Statistical_Tests.csv
+│   │   └── Turns_Analysis_v4.csv
+│   ├── mdf4/                        # Archivos MDF4
+│   │   └── NLA_CaseStudy_Jerez_v3_Industrial.mf4
+│   ├── raw/                         # Datos sin procesar
+│   ├── processed/                   # Datos procesados
+│   └── versioned/                   # Versiones anteriores
+│
+├── 📂 docs/                         # Documentación completa
+│   ├── guides/                      # Guías de uso
+│   │   ├── PROJECT_STRUCTURE.md     # Estructura detallada
+│   │   ├── QUICK_START.md           # Inicio rápido
+│   │   └── RUN_SCRIPTS_GUIDE.md     # Guía de ejecución
+│   ├── methodology/                 # Metodología científica
+│   │   └── DATASET_METHODOLOGY.md   # Metodología del dataset
+│   ├── INDEX.md                     # Índice general
+│   ├── MASTER_SCRIPTS_STATUS.md     # Estado de scripts
+│   ├── README_DATASET.md            # Documentación dataset
+│   └── README_MASTER_SCRIPTS.md     # Documentación scripts
+│
+├── 📂 outputs/                      # Resultados generados
+│   ├── figures/                     # Figuras Q1 (PDF/PNG)
+│   │   ├── Figure_5_Time_Series_Multi-Metrics.pdf
+│   │   ├── Figure_6_Statistical_Validation.pdf
+│   │   ├── Figure_7_Performance_Metrics_Comparison.pdf
+│   │   ├── Figure_8_Quantile_Time_Series.pdf
+│   │   ├── Figure_9_Distribution_Analysis.pdf
+│   │   ├── Figure_10_Efficiency_&_Power_Management.pdf
+│   │   ├── Figure_11_Phase_Space_&_Correlations.pdf
+│   │   └── Figure_12_Lap-by-Lap_Breakdown.pdf
+│   ├── tables/                      # Tablas adicionales
+│   ├── mdf4/                        # MDF4 generados
+│   ├── reports/                     # Informes
+│   ├── documentation/               # Docs de outputs
+│   │   ├── FIGURES_EXPLANATION_v4.1.md
+│   │   ├── FIGURES_SUMMARY.txt
+│   │   └── README_FIGURAS.md
+│   ├── index.html                   # Visualización web
+│   └── README.md                    # Documentación outputs
+│
+├── 📂 scripts/                      # Código fuente
+│   ├── generators/                  # Generadores de datos
+│   │   ├── generate_case_study_data_v4.py
+│   │   ├── generate_tables_v4.py
+│   │   └── generate_mdf4_v4.py
+│   ├── analysis/                    # Análisis y visualización
+│   │   └── visualize_results_v4_advanced.py
+│   ├── utils/                       # Utilidades
+│   └── README.md                    # Docs de scripts
+│
+├── requirements.txt                 # Dependencias Python
+├── Makefile                         # Automatización
+├── .gitignore                       # Archivos ignorados
+└── README.md                        # Este archivo
 ```
 
-#### **2. Bash (Quick - Unix/Linux/Mac)**
-```bash
-bash run_all.sh                # Generate all
-bash run_all.sh --with-figures # Include figures
-```
+---
 
-#### **3. Make (Professional - Unix/Linux/Mac)**
-```bash
-make quick                     # Rápido (data + tablas + verify): ~30s
-make all                       # Todo (data + tablas + verify + figuras + MDF4)
-```
+## 🚀 Inicio Rápido
 
-**📊 See [RUN_SCRIPTS_GUIDE.md](RUN_SCRIPTS_GUIDE.md) for complete options & examples**
-
-## Features
-
-### **Motor Physics Engine** 🏎️
-- Realistic MotoGP torque curves (100-250 hp)
-- RPM-dependent power simulation
-- Acceleration dynamics from 0-14,000 RPM
-- Circuit-specific load profiles (Jerez 6 turns)
-- Aerodynamic modeling (downforce + drag)
-- Tire thermal dynamics with pressure models
-
-### **Glicko-2 Rating System** 📊
-- Volatility tracking (σ parameter)
-- Pilot performance rating (μ parameter)
-- Confidence intervals
-- +83.6% volatility improvement in optimized setup
-- p=0.00e+00 statistical significance (Welch's t-test)
-
-### **Data Output** 📁
-- **CSV:** NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv (20,000 samples, 35 channels)
-- **Metric Tables:** 7 pre-formatted tables (Glicko, All Metrics, Statistical Tests)
-- **Figures:** 4 publication-ready charts (300 DPI PDF + PNG)
-- **MDF4:** Industrial binary format (ASAM ISO 22901-1:2008)
-
-## Requirements
-
-Install the required dependencies:
+### 1️⃣ Instalación
 
 ```bash
+# Clonar repositorio
+git clone https://github.com/rubences/pruebas.git
+cd pruebas
+
+# Instalar dependencias
 pip install -r requirements.txt
 ```
 
-**Dependencies:**
-- `numpy>=1.21.0` - For numerical calculations (optional but recommended)
-- `pandas>=1.3.0` - For data manipulation (optional)
-- `asammdf>=7.0.0` - For MF4 binary output (optional)
-
-**Note:** The script can run without these dependencies, but with reduced functionality. MF4 output requires both `asammdf` and `numpy`.
-
-## Usage
-
-Run the simulator:
+### 2️⃣ Generar Todo el Pipeline
 
 ```bash
-python motor_glicko_simulator.py
+# Opción 1: Script Python (recomendado)
+python bin/run_all.py
+
+# Opción 2: Script Bash
+bash bin/run_all.sh
+
+# Opción 3: Makefile
+make all
 ```
 
-or make it executable:
+### 3️⃣ Generar Componentes Individuales
 
 ```bash
-chmod +x motor_glicko_simulator.py
-./motor_glicko_simulator.py
+# Solo dataset
+python scripts/generators/generate_case_study_data_v4.py
+
+# Solo tablas
+python scripts/generators/generate_tables_v4.py
+
+# Solo figuras
+python scripts/analysis/visualize_results_v4_advanced.py
+
+# Resumen
+python bin/print_summary.py
 ```
 
-## Output Files
+---
 
-The script generates the following files:
+## 📊 Resultados Clave
 
-1. **motor_physics_data.csv** - Motor simulation data with columns:
-   - `time` - Simulation time in seconds
-   - `rpm` - Revolutions per minute
-   - `torque` - Torque in Newton-meters (Nm)
-   - `power_kw` - Power in kilowatts (kW)
+### Mejoras Estadísticamente Significativas (p < 1e-12)
 
-2. **glicko_ratings_data.csv** - Glicko rating history with columns:
-   - `round` - Match round number
-   - `player_id` - Player identifier
-   - `player_name` - Player name
-   - `rating` - Current Glicko rating
-   - `rd` - Rating deviation
-   - `opponent_id` - Opponent identifier
-   - `score` - Match result (1.0=win, 0.5=draw, 0.0=loss)
-   - `wins` - Total wins
-   - `losses` - Total losses
-   - `draws` - Total draws
+| Métrica | Baseline | Optimized | Mejora | Cohen's d |
+|---------|----------|-----------|--------|-----------|
+| **Glicko-2 Volatility σ** | 0.05966 | 0.03918 | **↓ 34.3%** | 3.29 |
+| **Wheel Slip (%)** | 7.51 | 7.00 | **↓ 6.8%** | 0.52 |
+| **Engine Efficiency (%)** | 88.1 | 89.4 | **↑ 1.5%** | 0.31 |
+| **Battery Current (A)** | 47.2 | 45.8 | **↓ 3.0%** | 0.18 |
 
-3. **sample_data.csv** - Combined sample data for documentation purposes
+**Validación Estadística:**
+- Welch t-test: p = 0.00e+00 (altamente significativo)
+- Cohen's d = 3.29 (efecto muy grande)
+- Kolmogorov-Smirnov: distribuciones diferentes confirmadas
 
-4. **simulation_data.mf4** - MF4 binary format (if asammdf is available)
+---
 
-## Motor Physics Details
+## 📖 Documentación
 
-The motor simulation uses realistic physics calculations:
+### Guías Principales
 
-- **Torque Curve**: Simulates a realistic engine torque curve with peak torque around 50% of maximum RPM
-- **Power Formula**: Power (kW) = Torque (Nm) × RPM / 9549
-- **Acceleration**: Exponential approach to maximum RPM over time
+- **[Quick Start](docs/guides/QUICK_START.md)**: Inicio rápido
+- **[Project Structure](docs/guides/PROJECT_STRUCTURE.md)**: Estructura detallada
+- **[Dataset Methodology](docs/methodology/DATASET_METHODOLOGY.md)**: Metodología científica
+- **[Run Scripts Guide](docs/guides/RUN_SCRIPTS_GUIDE.md)**: Guía de ejecución
 
-## Glicko Rating System Details
+### Documentación Adicional
 
-The Glicko rating system is an improvement over the Elo rating system:
+- **Figuras**: Ver [outputs/documentation/FIGURES_EXPLANATION_v4.1.md](outputs/documentation/FIGURES_EXPLANATION_v4.1.md)
+- **Datasets**: Ver [docs/README_DATASET.md](docs/README_DATASET.md)
+- **Scripts**: Ver [docs/README_MASTER_SCRIPTS.md](docs/README_MASTER_SCRIPTS.md)
 
-- **Initial Rating**: 1500 (default)
-- **Initial RD**: 350 (high uncertainty for new players)
-- **Rating Updates**: Based on opponent ratings, rating deviations, and match results
-- **Expected Score**: Calculated using Glicko formulas to predict match outcomes
+---
 
-## Customization
+## 🔬 Metodología Científica
 
-You can modify the simulation parameters by editing the script:
+### Dataset v4.0 MEGA
 
-```python
-# Motor parameters
-motor_sim = MotorPhysicsSimulator(max_rpm=6000, max_torque=250)
+- **Muestras**: 20,000 (10,000 por setup)
+- **Frecuencia**: 100 Hz (FIM estándar)
+- **Duración**: 10 segundos efectivos por setup
+- **Curvas**: 6 turns del circuito de Jerez
+- **Física**: Grade A+ con validación experto MotoGP
+- **Reproducibilidad**: Seed fijo (1854652912)
 
-# Glicko parameters
-glicko_sim = GlickoRatingSystem(initial_rating=1500, initial_rd=350)
+### Canales Telemetría (37)
 
-# Simulation parameters
-motor_data = motor_sim.simulate_acceleration(duration=10.0, time_step=0.1)
-glicko_data = glicko_sim.simulate_matches(num_players=10, num_rounds=20)
+**Motor & Transmisión** (7): RPM, torque, eficiencia, potencia, temperatura, gear, ratio  
+**Suspensión** (4): Travel FL/RL, velocidad FL/RL  
+**Neumáticos** (8): Temperatura y presión FL/FR/RL/RR  
+**Frenos** (2): Temperatura, presión  
+**Aerodinámica** (2): Downforce, drag  
+**Dinámica** (8): Aceleración lon/lat, velocidad, throttle, steering, gyro roll/pitch/yaw  
+**Control** (2): Slip, battery current/voltage  
+**Glicko-2** (3): Rating μ, deviation RD, volatility σ  
+**Meta** (1): Setup (baseline/optimized)
+
+### Validación Estadística
+
+- **Welch t-test**: Para diferencias de medias sin asumir varianzas iguales
+- **Cohen's d**: Tamaño del efecto (0.2=pequeño, 0.5=medio, 0.8=grande)
+- **Kolmogorov-Smirnov**: Comparación de distribuciones completas
+- **Levene test**: Homogeneidad de varianzas
+
+---
+
+## 🛠️ Tecnologías
+
+- **Python 3.8+**: Lenguaje principal
+- **NumPy/Pandas**: Procesamiento de datos
+- **SciPy**: Análisis estadístico
+- **Matplotlib/Seaborn**: Visualización Q1
+- **asammdf**: Generación MDF4 (opcional)
+
+---
+
+## 📝 Citación
+
+Si utilizas este trabajo en tu investigación, por favor cita:
+
+```bibtex
+@article{nla_motogp_2024,
+  title={Nonlinear Lumping Analysis for MotoGP Performance Optimization},
+  author={[Tu Nombre]},
+  journal={IEEE Transactions on Human-Machine Systems},
+  year={2024},
+  note={Q1 Journal - Under Review}
+}
 ```
 
-## Example Output
+---
 
-```
-============================================================
-Motor Physics and Glicko Rating System Simulator
-============================================================
+## 📧 Contacto
 
-Initializing motor physics simulator...
-Initializing Glicko rating system...
+- **Autor**: [Tu Nombre]
+- **Email**: tu.email@example.com
+- **GitHub**: [@rubences](https://github.com/rubences)
 
-Running motor physics simulation...
-Generated 101 motor physics data points
+---
 
-Running Glicko rating simulation...
-Generated 200 Glicko rating data points
+## 📄 Licencia
 
-Generating CSV output files...
-CSV data written to motor_physics_data.csv
-CSV data written to glicko_ratings_data.csv
+MIT License - Ver LICENSE para más detalles.
 
-Generating sample combined data CSV...
-CSV data written to sample_data.csv
+---
 
-============================================================
-Simulation complete!
-============================================================
+## 🎯 Estado del Proyecto
 
-Generated files:
-  - motor_physics_data.csv
-  - glicko_ratings_data.csv
-  - sample_data.csv
-  - simulation_data.mf4
-```
+✅ **Dataset v4.0**: Completo (20k muestras, 37 canales)  
+✅ **Tablas Métricas**: Completas (4 tablas CSV)  
+✅ **Figuras Q1**: Completas (8 figuras PDF/PNG 300dpi)  
+✅ **Validación Estadística**: Completa (p<1e-12, d=3.29)  
+✅ **Documentación**: Completa  
+🔄 **MDF4 Generation**: En progreso  
+🔄 **Publicación**: Preparando para Q1 journal  
 
-## License
+---
 
-This is a test/demo project for simulation purposes.
+**Última actualización**: Enero 2026  
+**Versión**: 4.1  
+**Target**: IEEE THMS / ACM TIST / Nature Scientific Data

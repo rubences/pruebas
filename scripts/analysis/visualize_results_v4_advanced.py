@@ -13,8 +13,8 @@ import seaborn as sns
 from scipy import stats
 
 BASE_DIR = Path(__file__).resolve().parents[2] if len(Path(__file__).parents) >= 3 else Path(__file__).resolve().parent
-DATA_DIR = BASE_DIR / "data"
-TABLES_DIR = BASE_DIR / "outputs" / "tables"
+DATA_DIR = BASE_DIR / "data" / "datasets"
+TABLES_DIR = BASE_DIR / "data" / "tables"
 OUTPUTS_DIR = BASE_DIR / "outputs" / "figures"
 OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 

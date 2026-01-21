@@ -40,54 +40,53 @@ install:
 
 setup: install
 	@echo "🔧 Configurando proyecto..."
-	mkdir -p data/{datasets,tables,mdf4,raw,processed,versioned}
+	mkdir -p data/{raw,processed,versioned}
 	mkdir -p scripts/{generators,analysis,utils}
-	mkdir -p outputs/{figures,tables,mdf4,reports,documentation}
-	mkdir -p docs/{guides,methodology,summaries}
-	mkdir -p bin
+	mkdir -p outputs/{tables,figures,mdf4,reports}
+	mkdir -p docs/{guides,summaries}
 	@echo "✅ Proyecto configurado"
 
 data:
 	@echo "📊 Generando dataset v4.0..."
-	python scripts/generators/generate_case_study_data_v4.py
-	@echo "✅ Dataset v4.0 generado en data/datasets/"
+	python run_all.py --data-only
+	@echo "✅ Dataset v4.0 generado"
 
 tables: data
 	@echo "📋 Generando tablas métricas..."
-	python scripts/generators/generate_tables_v4.py
-	@echo "✅ Tablas generadas en data/tables/"
+	python run_all.py --tables-only
+	@echo "✅ Tablas generadas"
 
 verify: data
 	@echo "✓ Verificando dataset..."
 	python scripts/analysis/verify_dataset_v4.py
 	@echo "✅ Verificación completada"
 
-figures: data tables
-	@echo "📈 Generando figuras Q1 (8 figuras, 300dpi)..."
-	python scripts/analysis/visualize_results_v4_advanced.py
-	@echo "✅ Figuras generadas en outputs/figures/"
+figures: data
+	@echo "📈 Generando figuras..."
+	python run_all.py --with-figures
+	@echo "✅ Figuras generadas"
 
 mdf4: data
 	@echo "🔢 Generando MDF4 industrial..."
-	python scripts/generators/generate_mdf4_binary_v3.py
-	@echo "✅ MDF4 generado en data/mdf4/"
+	python run_all.py --with-mdf4
+	@echo "✅ MDF4 generado"
 
 quick: data tables verify
 	@echo "✅ Ejecución rápida completada"
 
-all: data tables verify figures mdf4
-	@echo "✅ Pipeline completo ejecutado"
+all: setup data tables verify figures mdf4
+	@echo "✅ TODO completado exitosamente"
 
 full: all
 	@echo "✅ Ejecución completa finalizada"
 
 status:
 	@echo "📊 Estado del Proyecto:"
-	@bash bin/show_structure.sh 2>/dev/null || tree -L 2 .
+	bash show_structure.sh
 
 info-data:
 	@echo "📊 Datasets disponibles:"
-	@ls -lh data/datasets/*.csv 2>/dev/null | awk 'NR>0 {print "  " $$9 " (" $$5 ")"}' || echo "  (ningún dataset generado aún)"
+	ls -lh data/versioned/ | awk 'NR>1 {print "  " $$9 " (" $$5 ")"}'
 
 info-scripts:
 	@echo "🐍 Scripts disponibles:"
@@ -117,15 +116,16 @@ docs:
 
 clean:
 	@echo "⚠️  Limpiando archivos generados..."
-	rm -f data/datasets/*.csv
-	rm -f data/tables/*.csv
-	rm -f data/mdf4/*.mf4
-	rm -f outputs/figures/*.pdf outputs/figures/*.png
-	@echo "✅ Archivos limpios (regenerar con 'make all')"
+	rm -f data/versioned/*.csv
+	rm -f data/versioned/*.mf4
+	rm -f outputs/tables/*.csv
+	rm -f outputs/figures/*.pdf
+	rm -f outputs/figures/*.png
+	@echo "✅ Archivos limpios (puedes regenerar con 'make all')"
 
 # Funciones auxiliares silenciosas
 _check_python:
 	@command -v python3 >/dev/null 2>&1 || { echo "❌ Python3 no encontrado"; exit 1; }
 
 _check_data:
-	@test -f data/datasets/NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv || { echo "❌ Dataset no encontrado. Ejecuta 'make data'"; exit 1; }
+	@test -f data/versioned/NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv || { echo "❌ Dataset no encontrado. Ejecuta 'make data'"; exit 1; }

@@ -1,0 +1,5 @@
+Test,Statistic,p-value,Result
+Welch t-test,232.6202,0.00e+00,HIGHLY SIG ✅
+Cohen d,3.2897,N/A,LARGE EFFECT
+Levene Test,808.0554,2.76e-174,UNEQUAL VAR
+KS Test,1.0000,0.00e+00,DISTRIBUTIONS DIFFER

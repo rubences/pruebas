@@ -29,8 +29,8 @@ warnings.filterwarnings('ignore')
 
 # Setup paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-DATA_DIR = PROJECT_ROOT / "data" / "versioned"
-OUTPUTS_DIR = PROJECT_ROOT / "outputs" / "tables"
+DATA_DIR = PROJECT_ROOT / "data" / "datasets"
+OUTPUTS_DIR = PROJECT_ROOT / "data" / "tables"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
