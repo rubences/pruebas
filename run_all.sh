@@ -147,7 +147,7 @@ if [ "$VERIFY" = true ]; then
     echo ""
     
     START=$(date +%s)
-    python3 scripts/analysis/verify_dataset.py data/versioned/NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv
+    python3 scripts/analysis/verify_dataset_v4.py
     END=$(date +%s)
     DURATION=$((END - START))
     

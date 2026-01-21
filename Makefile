@@ -58,7 +58,7 @@ tables: data
 
 verify: data
 	@echo "✓ Verificando dataset..."
-	python scripts/analysis/verify_dataset.py data/versioned/NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv
+	python scripts/analysis/verify_dataset_v4.py
 	@echo "✅ Verificación completada"
 
 figures: data

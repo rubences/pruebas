@@ -1,0 +1,72 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║                    🎯 QUICK START - MASTER SCRIPTS v4.0                  ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+OPCIÓN 1: Python (Recomendado - Multiplataforma)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ejecutar todo (dataset + tablas + verificación):
+  $ python run_all.py
+
+O solo dataset (si solo necesitas datos):
+  $ python run_all.py --data-only
+
+Ver todas las opciones:
+  $ python run_all.py --help
+
+OPCIÓN 2: Make (Para profesionales)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ejecución rápida (la más común):
+  $ make quick
+
+O por componentes:
+  $ make data        # Solo generar dataset
+  $ make tables      # Solo generar tablas
+  $ make verify      # Solo verificación
+  $ make all         # TODO (incluyendo figuras + MDF4)
+
+Ver todos los targets:
+  $ make help
+
+OPCIÓN 3: Bash (Linux/Mac)
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ejecutar script:
+  $ bash run_all.sh
+
+Con opciones:
+  $ bash run_all.sh --data-only
+  $ bash run_all.sh --with-figures
+
+═══════════════════════════════════════════════════════════════════════════════
+
+ARCHIVOS GENERADOS (después de ejecutar):
+  • data/versioned/NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv (11 MB, 20K muestras)
+  • outputs/tables/Table_v4_Glicko_Summary.csv
+  • outputs/tables/Table_v4_All_Metrics.csv
+  • outputs/tables/Table_v4_Statistical_Tests.csv
+
+TIEMPO ESPERADO:
+  • Dataset alone: ~2.3 segundos
+  • Full (data + tables + verify): ~4.5 segundos
+  • Make quick: ~7.2 segundos
+
+REQUISITOS:
+  • Python 3.7+
+  • numpy, pandas, scipy, matplotlib, seaborn
+  • (Opcional: asammdf para MDF4)
+
+INSTALAR DEPENDENCIAS:
+  $ pip install -r requirements.txt
+
+═══════════════════════════════════════════════════════════════════════════════
+
+VER MÁS DETALLES:
+  • Master Scripts: cat MASTER_SCRIPTS_STATUS.md
+  • Guía de Integración: docs/guides/GUIA_INTEGRACION_PAPER.md
+  • Estructura del Proyecto: docs/PROJECT_STRUCTURE.md
+
+═══════════════════════════════════════════════════════════════════════════════
