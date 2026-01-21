@@ -1,7 +1,6 @@
-# Generated output files
-motor_physics_data.csv
-glicko_ratings_data.csv
-simulation_data.mf4
+# ═══════════════════════════════════════════════════════════════
+# .gitignore - MotoGP Dataset & Glicko-2 Analysis v4.1
+# ═══════════════════════════════════════════════════════════════
 
 # Python
 __pycache__/
@@ -27,16 +26,56 @@ wheels/
 
 # Virtual environments
 venv/
-ENV/
 env/
+ENV/
+env.bak/
+venv.bak/
 
-# IDE
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Data files (no versionar archivos generados grandes)
+data/datasets/*.csv
+data/mdf4/*.mf4
+data/processed/*.csv
+data/versioned/*.csv
+data/versioned/*.mf4
+
+# Excepción: mantener dataset de ejemplo pequeño
+!data/raw/sample_data.csv
+
+# Output files (figuras y tablas generadas)
+outputs/figures/*.pdf
+outputs/figures/*.png
+outputs/figures/legacy/
+outputs/tables/*.csv
+outputs/mdf4/*.mf4
+outputs/reports/*.md
+
+# Tables (regenerables con scripts)
+data/tables/*.csv
+
+# Logs y temporales
+*.log
+*.tmp
+*.temp
+*.bak
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Sistema
 Thumbs.db
+Desktop.ini
+
+# Backups
+*.backup
+Makefile.bak
