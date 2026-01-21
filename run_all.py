@@ -234,7 +234,7 @@ def run_generate_figures():
         
         start = time.time()
         result = subprocess.run(
-            [sys.executable, "scripts/analysis/visualize_results_v3.py"],
+            [sys.executable, "scripts/analysis/visualize_results_v4.py"],
             cwd=PROJECT_ROOT,
             capture_output=True,
             text=True,
@@ -248,11 +248,10 @@ def run_generate_figures():
             print_info(f"  Ubicación: {OUTPUTS_DIR}/figures/")
             return True
         else:
-            # Script v3 requiere dataset específico - es normal que falle
-            # Mostrar advertencia en lugar de error
-            print_info(f"⚠ Visualización v3 requiere dataset específico (v3.0)")
-            print_info(f"  Para usar: python scripts/analysis/visualize_results_v3.py")
-            print_info(f"  Estado: v4.0 MEGA soportará figuras en próxima versión")
+            if result.stderr:
+                print_error(f"Error en generación de figuras: {result.stderr}")
+            else:
+                print_error("Error en generación de figuras (sin salida de error)")
             return True  # No bloquear ejecución
         
     except Exception as e:

@@ -22,9 +22,17 @@ Reviewer Confidence: 99%+
 import numpy as np
 import pandas as pd
 from scipy import stats, signal, interpolate
+from pathlib import Path
 import warnings
 
 warnings.filterwarnings('ignore')
+
+# Setup paths
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+DATA_DIR = PROJECT_ROOT / "data" / "versioned"
+OUTPUTS_DIR = PROJECT_ROOT / "outputs" / "tables"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ========================
 # CONSTANTS
@@ -379,9 +387,9 @@ if __name__ == '__main__':
     turn_stats_optimized = analyze_by_turn(df_optimized)
     
     # Export dataset
-    output_file = 'NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv'
+    output_file = DATA_DIR / 'NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv'
     df_complete.to_csv(output_file, index=False)
-    print(f"   ├─ Dataset exported: {output_file} ({len(df_complete):,} rows)")
+    print(f"   ├─ Dataset exported: {output_file.name} ({len(df_complete):,} rows)")
     
     # Export per-turn analysis
     turn_comparison = []
@@ -393,9 +401,9 @@ if __name__ == '__main__':
                 turn_comparison.append(row)
     
     df_turns = pd.DataFrame(turn_comparison)
-    turns_file = 'Turns_Analysis_v4.csv'
+    turns_file = OUTPUTS_DIR / 'Turns_Analysis_v4.csv'
     df_turns.to_csv(turns_file, index=False)
-    print(f"   └─ Turns analysis exported: {turns_file}")
+    print(f"   └─ Turns analysis exported: {turns_file.name}")
     
     # Statistical summary
     print("\n" + "="*80)

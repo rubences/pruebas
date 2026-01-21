@@ -7,9 +7,22 @@ Create publication-ready tables for all metrics
 import pandas as pd
 import numpy as np
 from scipy import stats
+from pathlib import Path
+import os
+
+# Setup paths
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+DATA_DIR = PROJECT_ROOT / "data" / "versioned"
+OUTPUTS_DIR = PROJECT_ROOT / "outputs" / "tables"
+OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Load v4.0 dataset
-df_v4 = pd.read_csv('NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv')
+dataset_file = DATA_DIR / "NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv"
+if not dataset_file.exists():
+    # Fallback to current directory
+    dataset_file = "NLA_CaseStudy_Jerez_Q1_v4_MEGA.csv"
+
+df_v4 = pd.read_csv(dataset_file)
 df_baseline = df_v4[df_v4['setup'] == 'baseline']
 df_optimized = df_v4[df_v4['setup'] == 'optimized']
 
@@ -192,8 +205,9 @@ summary_data = {
     'Improvement (%)': [((val[0]-val[1])/val[0]*100) if val[0] != 0 else 0 for val in glicko_stats.values()],
 }
 df_summary = pd.DataFrame(summary_data)
-df_summary.to_csv('Table_v4_Glicko_Summary.csv', index=False)
-print("✅ Table_v4_Glicko_Summary.csv")
+summary_file = OUTPUTS_DIR / 'Table_v4_Glicko_Summary.csv'
+df_summary.to_csv(summary_file, index=False)
+print(f"✅ {summary_file.name}")
 
 # Create combined metrics table
 combined_data = []
@@ -210,8 +224,9 @@ for table_name, metrics_dict in [('Core', metrics_core), ('Dynamics', metrics_dy
         })
 
 df_combined = pd.DataFrame(combined_data)
-df_combined.to_csv('Table_v4_All_Metrics.csv', index=False)
-print("✅ Table_v4_All_Metrics.csv")
+combined_file = OUTPUTS_DIR / 'Table_v4_All_Metrics.csv'
+df_combined.to_csv(combined_file, index=False)
+print(f"✅ {combined_file.name}")
 
 # Create statistical test table
 stats_data = {
@@ -221,8 +236,9 @@ stats_data = {
     'Result': ['HIGHLY SIG ✅', 'LARGE EFFECT', 'UNEQUAL VAR', 'DISTRIBUTIONS DIFFER'],
 }
 df_stats = pd.DataFrame(stats_data)
-df_stats.to_csv('Table_v4_Statistical_Tests.csv', index=False)
-print("✅ Table_v4_Statistical_Tests.csv")
+stats_file = OUTPUTS_DIR / 'Table_v4_Statistical_Tests.csv'
+df_stats.to_csv(stats_file, index=False)
+print(f"✅ {stats_file.name}")
 
 print("\n" + "="*140)
 print("🎉 v4.0 TABLES GENERATION COMPLETE")
