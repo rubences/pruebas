@@ -298,6 +298,85 @@ def validate_dataset_structure(df):
     
     return passed
 
+def validate_simulated_data():
+    """Validate H1/H2 simulated data CSVs."""
+    print_header("VALIDATING SIMULATED DATA (H1/H2)")
+    
+    passed = True
+    base_dir = Path(__file__).parent.parent.parent
+    
+    try:
+        # Check Segmentation data
+        seg_path = base_dir / "data" / "tables" / "Table_v4_Segmentation_Summary.csv"
+        if not seg_path.exists():
+            print_fail(f"Segmentation summary not found: {seg_path}")
+            return False
+        
+        seg_df = pd.read_csv(seg_path)
+        as_f1 = seg_df[seg_df['skill_atom'] == 'AS']['f1_score'].values[0]
+        ce_f1 = seg_df[seg_df['skill_atom'] == 'CE']['f1_score'].values[0]
+        
+        if 0.75 <= as_f1 <= 0.85:
+            print_pass(f"Skill Atom AS F1-Score: {as_f1:.4f} (expected: ~0.78)")
+        else:
+            print_fail(f"Skill Atom AS F1-Score: {as_f1:.4f} (out of range [0.75, 0.85])")
+            passed = False
+        
+        if 0.95 <= ce_f1 <= 1.0:
+            print_pass(f"Skill Atom CE F1-Score: {ce_f1:.4f} (expected: ~1.0)")
+        else:
+            print_fail(f"Skill Atom CE F1-Score: {ce_f1:.4f} (out of range [0.95, 1.0])")
+            passed = False
+        
+        # Check MQTT latency data
+        mqtt_path = base_dir / "data" / "tables" / "Table_v4_MQTT_Summary.csv"
+        if not mqtt_path.exists():
+            print_fail(f"MQTT summary not found: {mqtt_path}")
+            return False
+        
+        mqtt_df = pd.read_csv(mqtt_path)
+        p95_e2e = mqtt_df[mqtt_df['metric'] == 'End-to-End']['p95_latency_ms'].values[0]
+        packet_loss = mqtt_df[mqtt_df['metric'] == 'End-to-End']['packet_loss_pct'].values[0]
+        
+        if 150 <= p95_e2e <= 200:
+            print_pass(f"MQTT p95 End-to-End Latency: {p95_e2e:.2f} ms (expected: ~176 ms)")
+        else:
+            print_fail(f"MQTT p95 latency: {p95_e2e:.2f} ms (out of range [150, 200] ms)")
+            passed = False
+        
+        if packet_loss < 0.1:
+            print_pass(f"Packet Loss: {packet_loss:.3f}% (expected: <0.1%)")
+        else:
+            print_fail(f"Packet Loss: {packet_loss:.3f}% (too high)")
+            passed = False
+        
+        # Check Time Loss Attribution
+        loss_path = base_dir / "data" / "tables" / "Table_v4_Time_Loss_Attribution.csv"
+        if not loss_path.exists():
+            print_fail(f"Time loss attribution not found: {loss_path}")
+            return False
+        
+        loss_df = pd.read_csv(loss_path)
+        total_delta = loss_df[loss_df['sector'] == 'Total']['time_delta_s'].values[0]
+        setup_contrib = loss_df[loss_df['sector'] == 'Total']['setup_contribution_s'].values[0]
+        
+        if abs(total_delta) < 0.001:  # Less than 1ms variation
+            print_pass(f"Total Time Delta: {total_delta*1000:.3f} ms (negligible)")
+        else:
+            print_warn(f"Total Time Delta: {total_delta*1000:.3f} ms (small variation)")
+        
+        if abs(setup_contrib) < 0.001:
+            print_pass(f"Setup Contribution: {setup_contrib*1000:.3f} ms (minimal)")
+        else:
+            print_warn(f"Setup Contribution: {setup_contrib*1000:.3f} ms")
+        
+        return passed
+        
+    except Exception as e:
+        print_fail(f"Error validating simulated data: {str(e)}")
+        return False
+
+
 def main():
     """Main validation routine."""
     print(f"\n{BLUE}{'='*70}")
@@ -315,6 +394,7 @@ def main():
     all_passed &= validate_wheel_slip(df)
     all_passed &= validate_rpm(df)
     all_passed &= validate_statistical_tests(df, df_stats)
+    all_passed &= validate_simulated_data()
     
     # Final summary
     print_header("VALIDATION SUMMARY")
